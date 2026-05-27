@@ -4,6 +4,7 @@ const { generateToken } = require("../services/jwtService")
 
 exports.register = async (req, res) => {
   try {
+    console.log(req.body)
     const { email, password } = req.body // Get user input
 
     const exists = await db.oneOrNone('SELECT * FROM users WHERE email = $1', email)

@@ -2,6 +2,7 @@ require('dotenv').config({ path: '../.env' })
 
 const express = require('express')
 const app = express()
+app.use(express.json())
 
 const cors = require('cors')
 app.use(cors())
@@ -12,7 +13,7 @@ const authRoutes = require('./routes/auth')
 
 const port = process.env.PORT || 3000
 
-app.use(express.json())
+
 app.use('/auth', authRoutes)
 
 app.use((err, req, res, next) => {
