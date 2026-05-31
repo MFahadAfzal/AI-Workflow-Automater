@@ -1,3 +1,4 @@
+require('dotenv').config({ path: '../../../.env' })
 const db = require('../db/index')
 const { hashPassword, comparePassword } = require("../services/hashService")
 const { generateToken } = require("../services/jwtService")

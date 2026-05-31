@@ -1,21 +1,24 @@
-import Groq from "groq-sdk";
+require('dotenv').config({ path: '../../.env' })
+const Groq = require('groq-sdk')
 
 const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 
-export async function main() {
-  const chatCompletion = await getGroqChatCompletion();
-  // Print the completion returned by the LLM.
-  console.log(chatCompletion.choices[0]?.message?.content || "");
+
+exports.main = async(prompt) => {
+    const chatCompletion = await getGroqChatCompletion(prompt);
+    console.log(chatCompletion.choices[0]?.message?.content || "");
 }
 
-export async function getGroqChatCompletion() {
+
+async function getGroqChatCompletion(message) {
   return groq.chat.completions.create({
     messages: [
       {
         role: "user",
-        content: "Explain the importance of fast language models",
+        content: message,
       },
     ],
     model: "openai/gpt-oss-20b",
   });
 }
+
