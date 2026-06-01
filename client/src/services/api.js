@@ -17,13 +17,14 @@ const login = async(data) => {
 }
 
 const register = async(data) => {
-    const response = await fetch(`${baseUrl}/auth/login`, {
+    const response = await fetch(`${baseUrl}/auth/register`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
         },
         body: JSON.stringify(data)
     })
+
     if (!response.ok) {
         const error = new Error('Request failed')
         error.status = response.status

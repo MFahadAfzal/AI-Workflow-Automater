@@ -1,11 +1,12 @@
-require('dotenv').config({ path: '../../../.env' })
 const db = require('../db/index')
 const { hashPassword, comparePassword } = require("../services/hashService")
 const { generateToken } = require("../services/jwtService")
 
 exports.register = async (req, res) => {
+
   try {
     console.log(req.body)
+    
     const { email, password } = req.body // Get user input
 
     const exists = await db.oneOrNone('SELECT * FROM users WHERE email = $1', email)
@@ -23,7 +24,6 @@ exports.register = async (req, res) => {
     // Step 4: Send success response
     res.status(201).json({ message: "User registered successfully!" })
   } catch (err) {
-    // Handle errors gracefully
     res.status(500).json({ error: err.message })
   }
 };
