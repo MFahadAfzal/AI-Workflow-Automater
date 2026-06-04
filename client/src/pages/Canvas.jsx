@@ -1,20 +1,26 @@
 import React, { useRef, useCallback, useState } from 'react';
-import { ReactFlow, ReactFlowProvider, addEdge, applyNodeChanges, applyEdgeChanges, Controls, useReactFlow, Background } from '@xyflow/react';
+import { ReactFlow, ReactFlowProvider, addEdge, applyNodeChanges, applyEdgeChanges, Controls, useReactFlow, Background, Panel } from '@xyflow/react';
 
 import '@xyflow/react/dist/style.css';
 
 import Sidebar from '../components/Sidebar';
 import { DnDProvider, useDnD } from '../components/DnDContext';
 import ClaudeNode from '../components/nodes/ClaudeNode';
+import GroqNode from '../components/nodes/GroqNode';
+import PromptNode from '../components/nodes/PromptNode';
+import OutputNode from '../components/nodes/OutputNode';
 
 const nodeTypes = {
   claude: ClaudeNode,
+  groq: GroqNode,
+  prompt: PromptNode,
+  result: OutputNode
 }
 
 
 const initialNodes = [
-  { id: '1', position: { x: 0, y: 0 }, data: { label: 'Node 1' } },
-  { id: '2', position: { x: 0, y: 100 }, data: { label: 'Node 2' } },
+  { id: '1', type: 'prompt', position: { x: 0, y: 0 }, data: { label: 'Node 1' } },
+  { id: '2', type: 'claude', position: { x: 0, y: 100 }, data: { label: 'Node 2' } },
 ];
 
 const initialEdges = [{ id: 'e1-2', source: '1', target: '2' }];
@@ -84,9 +90,9 @@ function Canvas() {
   };
 
   return (
-    <div className="w-screen h-screen ">
+    <div className="w-screen h-screen flex flex-col">
         <Sidebar />
-        <div className='h-full w-full'>
+        <div className='h-full w-full flex-1'>
           
           <ReactFlow 
             nodes={nodes} 
@@ -101,6 +107,15 @@ function Canvas() {
             fitView>
             
             <Background/>
+
+            <Panel position="bottom-left">
+              <div className="bg-white rounded p-2 text-xs flex flex-col gap-1 shadow">
+                <div className="flex items-center gap-2"><div className="w-3 h-3 rounded border-2 border-orange-400"></div> Claude</div>
+                <div className="flex items-center gap-2"><div className="w-3 h-3 rounded border-2 border-blue-400"></div> Groq</div>
+                <div className="flex items-center gap-2"><div className="w-3 h-3 rounded border-2 border-gray-400"></div> Prompt</div>
+              </div>
+            </Panel>
+
           </ReactFlow>
           </div>
         

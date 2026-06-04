@@ -1,6 +1,6 @@
 import React from 'react';
 import { useDnD } from './DnDContext';
-
+import { Play } from 'lucide-react'
 export default () => {
   const [_, setType] = useDnD();
 
@@ -15,7 +15,7 @@ export default () => {
 
       <div
         className="bg-gray-700 hover:bg-gray-600 text-white text-xs px-3 py-1.5 rounded cursor-grab select-none"
-        onDragStart={(event) => onDragStart(event, 'input')}
+        onDragStart={(event) => onDragStart(event, 'prompt')}
         draggable
       >
         Prompt
@@ -31,7 +31,7 @@ export default () => {
 
       <div
         className="bg-gray-700 hover:bg-gray-600 text-white text-xs px-3 py-1.5 rounded cursor-grab select-none"
-        onDragStart={(event) => onDragStart(event, 'default')}
+        onDragStart={(event) => onDragStart(event, 'groq')}
         draggable
       >
         Groq
@@ -39,7 +39,7 @@ export default () => {
 
       <div
         className="bg-gray-700 hover:bg-gray-600 text-white text-xs px-3 py-1.5 rounded cursor-grab select-none"
-        onDragStart={(event) => onDragStart(event, 'output')}
+        onDragStart={(event) => onDragStart(event, 'result')}
         draggable
       >
         Output Node
@@ -47,7 +47,11 @@ export default () => {
 
       <div className="ml-auto flex gap-2">
         <button className="bg-gray-700 hover:bg-gray-600 text-white text-xs px-3 py-1.5 rounded">Save</button>
-        <button className="bg-blue-500 hover:bg-blue-600 text-white text-xs px-3 py-1.5 rounded">Run</button>
+
+        <button className="bg-blue-500 hover:bg-blue-600 text-white p-2 rounded">
+          <Play size={14} />
+        </button>
+
       </div>
     </div>
   );
