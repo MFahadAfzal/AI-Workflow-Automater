@@ -89,9 +89,20 @@ function Canvas() {
     event.dataTransfer.effectAllowed = 'move';
   };
 
+
+  const handleRun = async () => {
+      const response = await fetch('http://localhost:3000/workflow/run', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ nodes, edges })
+    })
+    const results = await response.json()
+    // update output nodes with results
+  }
+
   return (
     <div className="w-screen h-screen flex flex-col">
-        <Sidebar />
+        <Sidebar onRun={handleRun}/>
         <div className='h-full w-full flex-1'>
           
           <ReactFlow 
