@@ -5,6 +5,11 @@ import '@xyflow/react/dist/style.css';
 
 import Sidebar from '../components/Sidebar';
 import { DnDProvider, useDnD } from '../components/DnDContext';
+import ClaudeNode from '../components/nodes/ClaudeNode';
+
+const nodeTypes = {
+  claude: ClaudeNode,
+}
 
 
 const initialNodes = [
@@ -79,20 +84,26 @@ function Canvas() {
   };
 
   return (
-    <div className="w-screen h-screen flex">
-        <div className='h-full w-[80%]'>
+    <div className="w-screen h-screen ">
+        <Sidebar />
+        <div className='h-full w-full'>
+          
           <ReactFlow 
             nodes={nodes} 
             edges={edges} 
             onNodesChange={onNodesChange}
             onEdgesChange={onEdgesChange}
             onConnect={onConnect}
+            nodeTypes={nodeTypes}
             onDrop={onDrop}
             onDragStart={onDragStart}
             onDragOver={onDragOver}
-            fitView />
+            fitView>
+            
+            <Background/>
+          </ReactFlow>
           </div>
-        <Sidebar />
+        
     </div>
   );
 }
@@ -100,7 +111,8 @@ function Canvas() {
 export default () => (
   <ReactFlowProvider>
     <DnDProvider>
-      <Canvas />
+      <Canvas>
+      </Canvas>
     </DnDProvider>
   </ReactFlowProvider>
 )
