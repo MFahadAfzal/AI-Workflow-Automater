@@ -9,9 +9,8 @@ exports.main = async(prompt) => {
     console.log(chatCompletion.choices[0]?.message?.content || "");
 }
 
-
-async function getGroqChatCompletion(message) {
-  return groq.chat.completions.create({
+exports.getGroqChatCompletion = async(message) => {
+    return groq.chat.completions.create({
     messages: [
       {
         role: "user",
@@ -22,3 +21,6 @@ async function getGroqChatCompletion(message) {
   });
 }
 
+exports.aiChat = async(ai) =>{
+  
+}
