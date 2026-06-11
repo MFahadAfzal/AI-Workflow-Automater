@@ -1,5 +1,6 @@
 import React, { useRef, useCallback, useState } from 'react';
 import { ReactFlow, ReactFlowProvider, addEdge, applyNodeChanges, applyEdgeChanges, Controls, useReactFlow, Background, Panel } from '@xyflow/react';
+import { run } from '../services/api'
 
 import '@xyflow/react/dist/style.css';
 
@@ -33,7 +34,8 @@ function Canvas() {
   const reactFlowWrapper = useRef(null);
   const [nodes, setNodes] = useState(initialNodes);
   const [edges, setEdges] = useState(initialEdges);
-  const { screenToFlowPosition } = useReactFlow();
+  const [errorMessage, setErrorMessage] = useState('')
+  const { screenToFlowPosition, updateNodeData } = useReactFlow();
   const [type] = useDnD();
 
 
@@ -91,13 +93,20 @@ function Canvas() {
 
 
   const handleRun = async () => {
-      const response = await fetch('http://localhost:3000/workflow/run', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ nodes, edges })
-    })
-    const results = await response.json()
-    // update output nodes with results
+    try{
+      const data = await run({ nodes, edges })
+      Object.entries(data).forEach(item => {
+        
+        const [outputId, outputData] = item
+        updateNodeData(outputId, {output: Object.values(outputData).join('\n')
+})
+      })
+        
+    } catch(error){
+      setErrorMessage('Unable to Run Workflow')
+    }
+    
+
   }
 
   return (

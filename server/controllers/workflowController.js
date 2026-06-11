@@ -10,7 +10,7 @@ exports.runWorkflow = async(req, res) => {
     const inDegree = {} // tracks how many edges point into each node
     const inputs = {} //stores the inputs a node needs so that when it executes all the inputs are stored in here
     const queue = []
-
+    const results = {} //stores all the outputs
 
     for (const edge of edges) {
 
@@ -28,6 +28,63 @@ exports.runWorkflow = async(req, res) => {
         inDegree[edge.target] = (inDegree[edge.target] || 0) + 1
     }
 
+
+
+    const executeNode = async(node) =>{
+    if(node.type === 'prompt'){
+            for (const neighborId of adjacency[node.id]) {
+
+                // if this neighbor hasn't received any inputs yet, initialize its input storage
+                if(!(neighborId in inputs)){
+                    inputs[neighborId] = {}
+                }
+
+                // store this node's output in the neighbor's input map, keyed by this node's id
+                inputs[neighborId][node.id] = node.data.prompt
+
+                // this neighbor has received one more of its required inputs
+                inDegree[neighborId]--
+                
+                // if all inputs have arrived, this neighbor is ready to execute
+                if (inDegree[neighborId] === 0){
+                    // find the full node object and add it to the queue
+                    const newNode = nodes.find(node => node.id === neighborId)
+                    queue.push(newNode)
+                }
+            }
+
+        }else if (node.type === 'claude' || node.type === 'groq'){
+            // call the AI API with this node and its inputs, get the response text
+            const aiOutput = await aiChat(node, inputs)
+
+            // distribute this node's output to all connected neighbor nodes
+            for (const neighborId of adjacency[node.id]) {
+
+                // if this neighbor hasn't received any inputs yet, initialize its input storage
+                if(!(neighborId in inputs)){
+                    inputs[neighborId] = {}
+                }
+
+                // store this node's output in the neighbor's input map, keyed by this node's id
+                inputs[neighborId][node.id] = aiOutput
+
+                // this neighbor has received one more of its required inputs
+                inDegree[neighborId]--
+                
+                // if all inputs have arrived, this neighbor is ready to execute
+                if (inDegree[neighborId] === 0){
+                    // find the full node object and add it to the queue
+                    const newNode = nodes.find(node => node.id === neighborId)
+                    queue.push(newNode)
+                }
+            }
+        } else{
+            results[node.id] = inputs[node.id]
+        }
+
+    }
+
+
     // start nodes have outgoing edges but no incoming edges. puts those start nodes into the queue
     nodes.forEach(node => {
         if (sources.has(node.id) && !targets.has(node.id)) {
@@ -42,23 +99,5 @@ exports.runWorkflow = async(req, res) => {
         await Promise.all(batch.map(node => executeNode(node)))
     }
 
-    const executeNode = async(node) =>{
-        if(node.type === 'prompt'){
-
-        }else if (node.type === 'claude' || node.type === 'groq'){
-            const aiOutput = await aiChat(node)
-            for (const neighborId of adjacency[node.id]) {
-                if(!(neighborId in inputs)){
-                    inputs[neighborId] = {}
-                }
-                inputs[neighborId][node.id] = aiOutput
-                inDegree[neighborId]--
-                if (inDegree[neighborId] === 0){
-                    queue.push(neighborId)
-                }
-            }
-        }
-
-
-    }
+    res.json(results)
 }
