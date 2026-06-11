@@ -33,4 +33,21 @@ const register = async(data) => {
     return response.json()
 }
 
-export { login, register }
+const run = async(data) => {
+    const response = await fetch(`${baseUrl}/workflow/run`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+    })
+
+    if (!response.ok) {
+        const error = new Error('Request failed')
+        error.status = response.status
+        throw error
+    }
+    return response.json()
+}
+
+export { login, register, run }
