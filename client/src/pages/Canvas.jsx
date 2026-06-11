@@ -20,11 +20,14 @@ const nodeTypes = {
 
 
 const initialNodes = [
-  { id: '1', type: 'prompt', position: { x: 0, y: 0 }, data: { label: 'Node 1' } },
-  { id: '2', type: 'claude', position: { x: 0, y: 100 }, data: { label: 'Node 2' } },
+  { id: '1', type: 'prompt', position: { x: 0, y: 0 }, data: { label: 'Node 1', prompt: 'hello' } },
+  { id: '2', type: 'groq', position: { x: 0, y: 100 }, data: { label: 'Node 2' } },
+  { id: '3', type: 'result', position: { x: 0, y: 200 }, data: { label: 'Node 3' } }
 ];
 
-const initialEdges = [{ id: 'e1-2', source: '1', target: '2' }];
+const initialEdges = [{ id: 'e1-2', source: '1', target: '2' },
+  { id: 'e2-3', source: '2', target: '3' }
+];
 
 let id = 0;
 const getId = () => `dndnode_${id++}`;
@@ -98,8 +101,7 @@ function Canvas() {
       Object.entries(data).forEach(item => {
         
         const [outputId, outputData] = item
-        updateNodeData(outputId, {output: Object.values(outputData).join('\n')
-})
+        updateNodeData(outputId, {output: Object.values(outputData).join('\n') })
       })
         
     } catch(error){

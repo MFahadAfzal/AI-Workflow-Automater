@@ -14,6 +14,7 @@ const PromptNode = ({ id, data }) => {
         className="nodrag w-full text-xs border border-gray-200 rounded p-2 resize-none focus:outline-none focus:ring-1 focus:ring-gray-400"
         rows={4}
         placeholder="Type your prompt here..."
+        value={data.prompt || ''}
         onChange={onChange}
       />
       <Handle type="source" position={Position.Right} style={{ background: '#22c55e' }}/>

@@ -2,6 +2,7 @@ const db = require('../db/index')
 const {aiChat} = require('./aiController')
 
 exports.runWorkflow = async(req, res) => {
+
     const { nodes, edges } = req.body
 
     const targets = new Set() // tracks all node ids that are a target of at least one edge

@@ -9,12 +9,14 @@ app.use(cors())
 
 
 const authRoutes = require('./routes/auth')
-
+const workflowRoutes = require('./routes/workflow')
 
 const port = process.env.PORT || 3000
 
 
 app.use('/auth', authRoutes)
+
+app.use('/workflow', workflowRoutes)
 
 app.use((err, req, res, next) => {
     console.error(err)
