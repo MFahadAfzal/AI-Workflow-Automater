@@ -1,7 +1,7 @@
 import React from 'react';
 import { useDnD } from './DnDContext';
-import { Play } from 'lucide-react'
-export default ( { onRun } ) => {
+import { Play, Save } from 'lucide-react'
+export default ( { onRun, onSave } ) => {
   const [_, setType] = useDnD();
 
   const onDragStart = (event, nodeType) => {
@@ -46,7 +46,11 @@ export default ( { onRun } ) => {
       </div>
 
       <div className="ml-auto flex gap-2">
-        <button className="bg-gray-700 hover:bg-gray-600 text-white text-xs px-3 py-1.5 rounded">Save</button>
+        <button className="bg-gray-700 hover:bg-gray-600 text-white text-xs px-3 py-1.5 rounded">Saves</button>
+
+        <button onClick={onSave} className="bg-blue-500 hover:bg-blue-600 text-white p-2 rounded">
+          <Save size={14} />
+        </button>
 
         <button onClick={onRun} className="bg-blue-500 hover:bg-blue-600 text-white p-2 rounded">
           <Play size={14} />

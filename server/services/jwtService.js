@@ -6,7 +6,7 @@ const jwt = require("jsonwebtoken");
 exports.generateToken = (payload) => {
   // jwt.sign creates a signed token using our secret key from environment variables
   // expiresIn defines how long the token is valid (1 hour here)
-  return jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: "1h" });
+  return jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: "1d" });
 };
 
 // Function to verify a JWT

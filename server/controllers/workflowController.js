@@ -102,3 +102,22 @@ exports.runWorkflow = async(req, res) => {
 
     res.json(results)
 }
+
+
+exports.saveWorkflow = async(req,res) => {
+    try{
+        let id
+        const { nodes, edges } = req.body
+        const formattedNodes = JSON.stringify(nodes)
+        const formattedEdges = JSON.stringify(edges)
+        if(!req.body.id){
+            id = await db.one('INSERT INTO saves (userId, nodes, edges) VALUES ($1, $2, $3) RETURNING id', [req.user.id, formattedNodes, formattedEdges])
+        }else{
+            id = await db.one('UPDATE saves SET nodes=$1, edges=$2 WHERE id=$3 RETURNING id', [formattedNodes, formattedEdges, req.body.id])
+        }
+        res.json(id)
+    }catch (err) {
+        console.log(err)
+        res.status(500).json({ error: err.message });
+    }
+}
