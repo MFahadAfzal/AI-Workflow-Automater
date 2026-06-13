@@ -82,5 +82,16 @@ const save = async(data) => {
     return response.json()
 }
 
+const load = async() => {
+    const response = await fetch(`${baseUrl}/workflow/load`, {
+        method: 'GET',
+        headers: {
+            'Authorization': `Bearer ${localStorage.getItem('token')}`
+        }
+    })
 
-export { login, register, run, verify, save }
+    return response.json()
+}
+
+
+export { login, register, run, verify, save, load }

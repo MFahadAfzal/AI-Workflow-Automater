@@ -29,8 +29,6 @@ exports.aiChat = async(node, inputs) => {
 
 
 
-
-
 exports.getGroqChatCompletion = async(message) => {
     return groq.chat.completions.create({
     messages: [

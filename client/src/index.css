@@ -6,3 +6,17 @@
   border-radius: 0 !important;
   padding: 0 !important;
 }
+
+@theme {
+  --color-light-cyan-50: #e5fbff;
+  --color-light-cyan-100: #ccf7ff;
+  --color-light-cyan-200: #99f0ff;
+  --color-light-cyan-300: #66e8ff;
+  --color-light-cyan-400: #33e0ff;
+  --color-light-cyan-500: #00d9ff;
+  --color-light-cyan-600: #00adcc;
+  --color-light-cyan-700: #008299;
+  --color-light-cyan-800: #005766;
+  --color-light-cyan-900: #002b33;
+  --color-light-cyan-950: #001e24;
+}

@@ -1,11 +1,14 @@
 import React, { useRef, useCallback, useState, useEffect } from 'react';
 import { ReactFlow, ReactFlowProvider, addEdge, applyNodeChanges, applyEdgeChanges, Controls, useReactFlow, Background, Panel } from '@xyflow/react';
-import { run, verify, save } from '../services/api'
+import { run, verify, save, load } from '../services/api'
 import { useNavigate } from 'react-router-dom';
 
 import '@xyflow/react/dist/style.css';
 
 import Sidebar from '../components/Sidebar';
+import Topbar from '../components/Topbar';
+import SaveModal from '../components/Modals/SaveModal';
+import LoadModal from '../components/Modals/LoadModal';
 import { DnDProvider, useDnD } from '../components/DnDContext';
 import ClaudeNode from '../components/nodes/ClaudeNode';
 import GroqNode from '../components/nodes/GroqNode';
@@ -42,7 +45,17 @@ function Canvas() {
   const [nodes, setNodes] = useState(initialNodes);
   const [edges, setEdges] = useState(initialEdges);
   const [errorMessage, setErrorMessage] = useState('')
+  // Stores the current save's DB id — null means this workflow hasn't been saved yet
   const [saveId, setSaveId] = useState(null)
+  // Controls visibility of the save name modal
+  const [saveModalOpen, setSaveModalOpen] = useState(false)
+  // Stores the loaded workflows array — null when modal is closed, array when open
+  const [loadModalOpen, setLoadModalOpen] = useState(null)
+  // Controlled input value for the workflow name in the save modal
+  const [workflowName, setWorkflowName] = useState('')
+  // Validation error message shown in the save modal
+  const [nameError, setNameError] = useState('')
+
   const { screenToFlowPosition, updateNodeData } = useReactFlow();
   const [type] = useDnD();
   const navigate = useNavigate()
@@ -134,42 +147,106 @@ function Canvas() {
   }
 
   // Save current workflow to the database
+  // If a saveId exists, update the existing save silently
+  // If not, open the modal to name the new workflow
   const handleSave = async () => {
-    const {id} = await save({nodes, edges, saveId})
+    if (saveId) {
+      const {id} = await save({nodes, edges, saveId, name: workflowName})
+      setSaveId(id)
+    } else {
+      setSaveModalOpen(true)
+    }
+  }
+
+  // Called when user confirms the save name in the modal
+  // Validates the name, saves to DB, closes modal and resets name input
+  const handleConfirmSave = async () => {
+    if (!workflowName.trim()) {
+      setNameError('Please enter a name')
+      return
+    }
+    const {id} = await save({nodes, edges, saveId, name: workflowName})
     setSaveId(id)
+    setSaveModalOpen(false)
+    setWorkflowName('')
+  }
+
+  // Fetches all saved workflows for the current user and opens the load modal
+  const handleLoad = async() => {
+    const loadData = await load()
+    setLoadModalOpen(loadData)
+  }
+
+  // Called when user selects a workflow in the load modal
+  // Replaces canvas state with the loaded workflow and sets saveId for future updates
+  const handleConfirmLoad = (workflow) => {
+    setNodes(workflow.nodes)
+    setEdges(workflow.edges)
+    setSaveId(workflow.id)
+    setLoadModalOpen(null)
   }
 
   return (
     <div className="w-screen h-screen flex flex-col">
-        <Sidebar onRun={handleRun} onSave={handleSave}/>
-        <div className='h-full w-full flex-1'>
-          
-          <ReactFlow 
-            nodes={nodes} 
-            edges={edges} 
-            onNodesChange={onNodesChange}
-            onEdgesChange={onEdgesChange}
-            onConnect={onConnect}
-            nodeTypes={nodeTypes}
-            onDrop={onDrop}
-            onDragStart={onDragStart}
-            onDragOver={onDragOver}
-            fitView>
+
+        <div className='flex'>
+          <Topbar onRun={handleRun} onLoad={handleLoad}/>
+        </div>
+
+        <div className="w-screen h-screen flex flex-row">
+
+          <div className='h-full w-[90%] flex-1'>
             
-            <Background/>
+            <ReactFlow 
+              nodes={nodes} 
+              edges={edges} 
+              onNodesChange={onNodesChange}
+              onEdgesChange={onEdgesChange}
+              onConnect={onConnect}
+              nodeTypes={nodeTypes}
+              onDrop={onDrop}
+              onDragStart={onDragStart}
+              onDragOver={onDragOver}
+              fitView>
+              
+              <Background/>
 
-            {/* Legend showing node type colors */}
-            <Panel position="bottom-left">
-              <div className="bg-white rounded p-2 text-xs flex flex-col gap-1 shadow">
-                <div className="flex items-center gap-2"><div className="w-3 h-3 rounded border-2 border-orange-400"></div> Claude</div>
-                <div className="flex items-center gap-2"><div className="w-3 h-3 rounded border-2 border-blue-400"></div> Groq</div>
-                <div className="flex items-center gap-2"><div className="w-3 h-3 rounded border-2 border-gray-400"></div> Prompt</div>
-              </div>
-            </Panel>
+              {/* Legend showing node type colors */}
+              <Panel position="bottom-left">
+                <div className="bg-white rounded p-2 text-xs flex flex-col gap-1 shadow">
+                  <div className="flex items-center gap-2"><div className="w-3 h-3 rounded border-2 border-orange-400"></div> Claude</div>
+                  <div className="flex items-center gap-2"><div className="w-3 h-3 rounded border-2 border-blue-400"></div> Groq</div>
+                  <div className="flex items-center gap-2"><div className="w-3 h-3 rounded border-2 border-gray-400"></div> Prompt</div>
+                </div>
+              </Panel>
 
-          </ReactFlow>
-          </div>
+            </ReactFlow>
+            
+            </div>
+
+            <div className='flex w-[10%]'>
+              <Sidebar onRun={handleRun} onSave={handleSave}/>
+            </div>
         
+        </div>
+
+        {/* Save name modal — shown on first save only */}
+        {saveModalOpen && (
+          <SaveModal
+            onConfirm={handleConfirmSave}
+            onCancel={() => setSaveModalOpen(false)}
+            workflowName={workflowName}
+            setWorkflowName={setWorkflowName}
+            nameError={nameError}
+          />
+        )}
+
+        {/* Load modal — shown when user clicks load, passes workflow list as data */}
+        {loadModalOpen && 
+        <LoadModal data={loadModalOpen}
+        onCancel={() => setLoadModalOpen(null)}
+        onConfirm={handleConfirmLoad}
+        />}
     </div>
   );
 }

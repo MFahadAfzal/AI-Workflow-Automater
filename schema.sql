@@ -8,6 +8,7 @@ CREATE TABLE users (
 CREATE TABLE saves (
     userId uuid REFERENCES users(id),
     id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+    name VARCHAR(255),
     nodes JSONB NOT NULL,
     edges JSONB 
 );
