@@ -1,5 +1,5 @@
 import React, { useRef, useCallback, useState, useEffect } from 'react';
-import { ReactFlow, ReactFlowProvider, addEdge, applyNodeChanges, applyEdgeChanges, Controls, useReactFlow, Background, Panel } from '@xyflow/react';
+import { ReactFlow, ReactFlowProvider, addEdge, applyNodeChanges, applyEdgeChanges, useReactFlow, Background, Panel } from '@xyflow/react';
 import { run, verify, save, load } from '../services/api'
 import { useNavigate } from 'react-router-dom';
 
@@ -41,7 +41,6 @@ const getId = () => `dndnode_${id++}`;
 
 
 function Canvas() {
-  const reactFlowWrapper = useRef(null);
   const [nodes, setNodes] = useState(initialNodes);
   const [edges, setEdges] = useState(initialEdges);
   const [errorMessage, setErrorMessage] = useState('')
@@ -124,12 +123,6 @@ function Canvas() {
     [screenToFlowPosition, type],
   );
 
-  const onDragStart = (event, nodeType) => {
-    setType(nodeType);
-    event.dataTransfer.setData('text/plain', nodeType);
-    event.dataTransfer.effectAllowed = 'move';
-  };
-
   // Send current nodes and edges to the execution engine
   // Results are written back into output nodes via updateNodeData
   const handleRun = async () => {
@@ -183,6 +176,7 @@ function Canvas() {
     setNodes(workflow.nodes)
     setEdges(workflow.edges)
     setSaveId(workflow.id)
+    setWorkflowName(workflow.name)
     setLoadModalOpen(null)
   }
 
@@ -205,7 +199,6 @@ function Canvas() {
               onConnect={onConnect}
               nodeTypes={nodeTypes}
               onDrop={onDrop}
-              onDragStart={onDragStart}
               onDragOver={onDragOver}
               fitView>
               
