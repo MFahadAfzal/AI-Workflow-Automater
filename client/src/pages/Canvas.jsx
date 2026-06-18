@@ -9,15 +9,16 @@ import Sidebar from '../components/Sidebar';
 import Topbar from '../components/Topbar';
 import SaveModal from '../components/Modals/SaveModal';
 import LoadModal from '../components/Modals/LoadModal';
+import HelpModal from '../components/Modals/HelpModal'
 import { DnDProvider, useDnD } from '../components/DnDContext';
-import ClaudeNode from '../components/nodes/ClaudeNode';
+import MistralNode from '../components/nodes/MistralNode';
 import GroqNode from '../components/nodes/GroqNode';
 import PromptNode from '../components/nodes/PromptNode';
 import OutputNode from '../components/nodes/OutputNode';
 
 // Map node type strings to their corresponding React components
 const nodeTypes = {
-  claude: ClaudeNode,
+  mistral: MistralNode,
   groq: GroqNode,
   prompt: PromptNode,
   result: OutputNode
@@ -46,6 +47,8 @@ function Canvas() {
   const [errorMessage, setErrorMessage] = useState('')
   // Stores the current save's DB id — null means this workflow hasn't been saved yet
   const [saveId, setSaveId] = useState(null)
+  // Opens help screen which explains how to use website
+  const [helpModalOpen, setHelpModalOpen] = useState(false)
   // Controls visibility of the save name modal
   const [saveModalOpen, setSaveModalOpen] = useState(false)
   // Stores the loaded workflows array — null when modal is closed, array when open
@@ -180,11 +183,22 @@ function Canvas() {
     setLoadModalOpen(null)
   }
 
+  const handleClear = () => {
+    if (!window.confirm('Clear the canvas?')) return
+    setNodes([])
+    setEdges([])
+  }
+
+  const handleLogout = () => {
+    localStorage.removeItem('token')
+    navigate('/')
+  }
+  
   return (
-    <div className="w-screen h-screen flex flex-col">
+    <div className="w-screen h-screen flex flex-col gap-1">
 
         <div className='flex'>
-          <Topbar onRun={handleRun} onLoad={handleLoad}/>
+          <Topbar onRun={handleRun} onLoad={handleLoad} onSave={handleSave} onLogout={handleLogout} onHelp={() => setHelpModalOpen(true)}/>
         </div>
 
         <div className="w-screen h-screen flex flex-row">
@@ -207,7 +221,7 @@ function Canvas() {
               {/* Legend showing node type colors */}
               <Panel position="bottom-left">
                 <div className="bg-white rounded p-2 text-xs flex flex-col gap-1 shadow">
-                  <div className="flex items-center gap-2"><div className="w-3 h-3 rounded border-2 border-orange-400"></div> Claude</div>
+                  <div className="flex items-center gap-2"><div className="w-3 h-3 rounded border-2 border-orange-400"></div> Mistral</div>
                   <div className="flex items-center gap-2"><div className="w-3 h-3 rounded border-2 border-blue-400"></div> Groq</div>
                   <div className="flex items-center gap-2"><div className="w-3 h-3 rounded border-2 border-gray-400"></div> Prompt</div>
                 </div>
@@ -217,8 +231,8 @@ function Canvas() {
             
             </div>
 
-            <div className='flex w-[10%]'>
-              <Sidebar onRun={handleRun} onSave={handleSave}/>
+            <div className='flex w-[10%] mr-1 mb-2'>
+              <Sidebar onRun={handleRun} onClear={handleClear}/>
             </div>
         
         </div>
@@ -240,6 +254,9 @@ function Canvas() {
         onCancel={() => setLoadModalOpen(null)}
         onConfirm={handleConfirmLoad}
         />}
+
+
+        {helpModalOpen && <HelpModal onClose={() => setHelpModalOpen(false)} />}
     </div>
   );
 }

@@ -55,7 +55,7 @@ exports.runWorkflow = async(req, res) => {
                 }
             }
 
-        }else if (node.type === 'claude' || node.type === 'groq'){
+        }else if (node.type === 'mistral' || node.type === 'groq'){
             // call the AI API with this node and its inputs, get the response text
             const aiOutput = await aiChat(node, inputs)
 

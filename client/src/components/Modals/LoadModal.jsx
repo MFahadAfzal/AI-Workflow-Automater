@@ -7,8 +7,8 @@ export default ({ onConfirm, onCancel, workflowName, setWorkflowName, nameError,
     const [clicked, setClicked] = useState(null)
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-gray-900 rounded-xl p-6 flex flex-col gap-4 w-80 max-h-64 overflow-y-auto">
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+      <div className="bg-gray-900 rounded-xl p-6 flex flex-col gap-4 w-[95%] h-[90%] overflow-y-auto">
         <span className="text-white font-semibold text-lg">Your Workflows</span>
 
         {/* If no workflows exist, show empty state. Otherwise render the list */}

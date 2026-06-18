@@ -4,7 +4,7 @@ import React from 'react'
 // Only shown on first save — subsequent saves update silently
 export default ({ onConfirm, onCancel, workflowName, setWorkflowName, nameError }) => {
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50">
       <div className="bg-gray-900 rounded-xl p-6 flex flex-col gap-4 w-80">
         <span className="text-white font-semibold text-lg">Name your workflow</span>
         {/* Controlled input bound to workflowName state in Canvas */}
