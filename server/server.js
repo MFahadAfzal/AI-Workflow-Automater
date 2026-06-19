@@ -1,5 +1,6 @@
 require('dotenv').config({ path: '../.env' })
 
+
 const express = require('express')
 const app = express()
 app.use(express.json())
@@ -7,6 +8,7 @@ app.use(express.json())
 const cors = require('cors')
 app.use(cors())
 
+const wsConnections = require('./services/wsConnections')
 
 const authRoutes = require('./routes/auth')
 const workflowRoutes = require('./routes/workflow')
@@ -23,6 +25,8 @@ app.use((err, req, res, next) => {
     res.status(500).json({ error: 'Server error' })
 })
 
-app.listen(port, () => {
+const server = app.listen(port, () => {
     console.log(`Example app listening on port ${port}`)
 })
+
+wsConnections.init(server)

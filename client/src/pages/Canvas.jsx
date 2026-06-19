@@ -15,6 +15,7 @@ import MistralNode from '../components/nodes/MistralNode';
 import GroqNode from '../components/nodes/GroqNode';
 import PromptNode from '../components/nodes/PromptNode';
 import OutputNode from '../components/nodes/OutputNode';
+import { useWorkflowSocket } from '../hooks/useWorkflowSocket';
 
 // Map node type strings to their corresponding React components
 const nodeTypes = {
@@ -57,6 +58,8 @@ function Canvas() {
   const [workflowName, setWorkflowName] = useState('')
   // Validation error message shown in the save modal
   const [nameError, setNameError] = useState('')
+  // for Web Socket
+  const { messages } = useWorkflowSocket();
 
   const { screenToFlowPosition, updateNodeData } = useReactFlow();
   const [type] = useDnD();
@@ -74,6 +77,15 @@ function Canvas() {
     }
     fetchData()
   }, [])
+
+  useEffect(() => {
+    console.log("messages updated:", messages)
+    console.log('alskdjflksjdf')
+    if (messages.type === 'groq'){
+      console.log(messages.content)
+      setNodes(nodes.map(n => n.id === messages.nodeId ? {...n, data: {...n.data, response: messages.content}}: n))
+    }
+  }, [messages]);
 
   // Sync node state with React Flow internal changes (position, selection, etc)
   const onNodesChange = useCallback(
