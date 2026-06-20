@@ -59,7 +59,7 @@ function Canvas() {
   // Validation error message shown in the save modal
   const [nameError, setNameError] = useState('')
   // for Web Socket
-  const { messages } = useWorkflowSocket();
+  const { messages, clearMessages } = useWorkflowSocket();
 
   const { screenToFlowPosition, updateNodeData } = useReactFlow();
   const [type] = useDnD();
@@ -79,12 +79,28 @@ function Canvas() {
   }, [])
 
   useEffect(() => {
-    console.log("messages updated:", messages)
-    console.log('alskdjflksjdf')
-    if (messages.type === 'groq'){
-      console.log(messages.content)
-      setNodes(nodes.map(n => n.id === messages.nodeId ? {...n, data: {...n.data, response: messages.content}}: n))
+    if (messages.type === 'node_aborted') {
+      setNodes(prevNodes => prevNodes.map(n => 
+        n.id === messages.nodeId 
+          ? {...n, data: {...n.data, error: true, running: false}} 
+          : n
+      ))
     }
+
+    else if (messages.type === 'node_started' || messages.type === 'node_complete') {
+      setNodes(prevNodes => prevNodes.map(n => 
+        n.id === messages.nodeId 
+          ? {...n, data: {...n.data, running: messages.type === 'node_started'}} 
+          : n
+      ))
+    }
+
+    else if (messages.type === 'groq' || messages.type === 'mistral'){ 
+      setNodes(prevNodes => prevNodes.map(n => n.id === messages.nodeId ? 
+        {...n, data: {...n.data, response: messages.content}} 
+        : n))
+    }
+
   }, [messages]);
 
   // Sync node state with React Flow internal changes (position, selection, etc)
@@ -142,6 +158,12 @@ function Canvas() {
   // Results are written back into output nodes via updateNodeData
   const handleRun = async () => {
     try{
+      clearMessages()
+      setNodes(prevNodes => prevNodes.map(n => ({
+        ...n,
+        data: { ...n.data, response: '' }
+      })))
+
       const data = await run({ nodes, edges })
       Object.entries(data).forEach(item => {
         

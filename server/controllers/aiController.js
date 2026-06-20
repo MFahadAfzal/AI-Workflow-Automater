@@ -16,6 +16,8 @@ const groqChat = async(message) =>{
     ],
     model: "openai/gpt-oss-20b",
     max_completion_tokens: 1024,
+    reasoning_effort: "low",
+    include_reasoning: false,
     stream: true,
   });
 
@@ -23,11 +25,12 @@ const groqChat = async(message) =>{
 
 // Sends a chat completion request to Mistral's API
 const mistralChat = async(message) => {
-    return mistral.chat.complete({
+    return mistral.chat.stream({
         model: 'mistral-large-latest',
         messages: [
           { role: 'user', content: message }
         ],
+        max_completion_tokens: 1024,
       });
   }
 
@@ -38,21 +41,39 @@ exports.aiChat = async(node, inputs, ws) => {
   const values = Object.values(inputs[node.id]).join('\n')
   let fullText = ""
   if (node.type === 'groq'){
-    for await (const chunk of await groqChat(values)) {
-      const token = chunk.choices[0]?.delta?.content || ""
-      fullText += token
-      if (ws) {
-        ws.send(JSON.stringify({
-          type: "groq",
-          nodeId: node.id,
-          content: token
-        }))
+    try {
+      ws.send(JSON.stringify({ type: "node_started", nodeId: node.id }))
+      for await (const chunk of await groqChat(values)) {
+
+        const token = chunk.choices[0]?.delta?.content || ""
+        fullText += token
+        if (ws) {
+          ws.send(JSON.stringify({ type: "groq", nodeId: node.id, content: token }))
+        }
       }
+    } catch (err) {
+        ws.send(JSON.stringify({ type: "node_aborted", nodeId: node.id }))
+        console.error("Groq streaming error:", err)
+        return fullText
     }
   }else if (node.type === 'mistral'){
-    const chatCompletion = await mistralChat(values)
-    return chatCompletion.choices[0]?.message?.content || ""
+    try {
+      ws.send(JSON.stringify({ type: "node_started", nodeId: node.id }))
+      for await (const chunk of await mistralChat(values)) {
+        const token = chunk.data.choices[0]?.delta?.content || ""
+        fullText += token
+        if (ws) {
+          ws.send(JSON.stringify({ type: "mistral", nodeId: node.id, content: token }))
+        }
+      }
+      
+    } catch (err) {
+        ws.send(JSON.stringify({ type: "node_aborted", nodeId: node.id }))
+        console.error("Mistral streaming error:", err)
+        return fullText
+    }
   }
+  ws.send(JSON.stringify({ type: "node_complete", nodeId: node.id }))
   return fullText
 }
 

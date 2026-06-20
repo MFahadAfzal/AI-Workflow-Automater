@@ -1,4 +1,5 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react'
+import { flushSync } from 'react-dom'
 
 export function useWorkflowSocket() {
   const wsUri = import.meta.env.VITE_WS_URL
@@ -16,16 +17,25 @@ export function useWorkflowSocket() {
     });
 
     websocket.addEventListener('message', (event) => {
-        const parsed = JSON.parse(event.data)
-        console.log("WS RECEIVED:", parsed);
+    const parsed = JSON.parse(event.data)
+
+    if (parsed.type === 'node_started' || parsed.type === 'node_complete' || parsed.type === 'node_aborted') {
+      flushSync(() => {
         setMessages(parsed)
-        // parsed is now back to being a JS object: { type: ..., data: ... }
-    })
+      })
+      return
+    }
+
+    setMessages(prev => ({
+      ...parsed,
+      content: prev.nodeId === parsed.nodeId ? (prev.content || '') + parsed.content : parsed.content
+    }))
+})
 
     return () => {
       websocket.close();
     };
   }, []);
 
-  return { messages };
+  return { messages, clearMessages: () => setMessages({}) };
 }

@@ -37,7 +37,7 @@ exports.executeWorkflow = async (nodes, edges, ws) => {
                 }
             }
         } else if (node.type === 'mistral' || node.type === 'groq') {
-            const aiOutput = await aiChat(node, inputs)
+            const aiOutput = await aiChat(node, inputs, ws)
 
             for (const neighborId of adjacency[node.id]) {
                 if (!(neighborId in inputs)) {

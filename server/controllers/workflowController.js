@@ -1,6 +1,5 @@
 // controllers/workflowController.js
 const db = require('../db/index')
-const { wss } = require('../server')
 const executionEngineService = require('../services/executionEngineService')
 const wsConnections = require('../services/wsConnections')
 
