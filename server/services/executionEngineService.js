@@ -66,6 +66,10 @@ exports.executeWorkflow = async (nodes, edges, ws) => {
         queue.length = 0
         await Promise.all(batch.map(node => executeNode(node)))
     }
-
+    nodes.forEach(node => {
+        if (inDegree[node.id] > 0) {
+                ws.send(JSON.stringify({ type: "node_aborted", nodeId: node.id }))
+            }
+    })
     return results
 }
