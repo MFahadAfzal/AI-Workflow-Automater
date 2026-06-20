@@ -1,6 +1,6 @@
 import React, { useRef, useCallback, useState, useEffect } from 'react';
 import { ReactFlow, ReactFlowProvider, addEdge, applyNodeChanges, applyEdgeChanges, useReactFlow, Background, Panel } from '@xyflow/react';
-import { run, verify, save, load } from '../services/api'
+import { run, verify, save, load, deleteWorkflow } from '../services/api'
 import { useNavigate } from 'react-router-dom';
 
 import '@xyflow/react/dist/style.css';
@@ -217,6 +217,16 @@ function Canvas() {
     setLoadModalOpen(null)
   }
 
+  const handleDelete = async (workflow) => {
+      if (!window.confirm(`Delete "${workflow.name}"?`)) return
+      try {
+        await deleteWorkflow({ id: workflow.id })
+        setLoadModalOpen(prev => prev.filter(w => w.id !== workflow.id))
+      } catch (error) {
+        // it failed
+      }
+  }
+
   const handleClear = () => {
     if (!window.confirm('Clear the canvas?')) return
     setNodes([])
@@ -287,6 +297,7 @@ function Canvas() {
         <LoadModal data={loadModalOpen}
         onCancel={() => setLoadModalOpen(null)}
         onConfirm={handleConfirmLoad}
+        onDelete={handleDelete}
         />}
 
 

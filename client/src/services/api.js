@@ -93,5 +93,24 @@ const load = async() => {
     return response.json()
 }
 
+const deleteWorkflow = async(data) => {
+    const response = await fetch(`${baseUrl}/workflow/delete`, {
+        method: 'DELETE',
+        headers: {
+            'Authorization': `Bearer ${localStorage.getItem('token')}`,
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+    })
 
-export { login, register, run, verify, save, load }
+    if (!response.ok) {
+        const error = new Error('Request failed')
+        error.status = response.status
+        throw error
+    }
+    return response.json()
+}
+
+
+
+export { login, register, run, verify, save, load, deleteWorkflow }

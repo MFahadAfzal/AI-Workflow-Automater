@@ -2,7 +2,7 @@ import React, { useState }  from 'react'
 
 // Modal for loading a saved workflow
 // Displays all of the user's saved workflows and lets them select one to load
-export default ({ onConfirm, onCancel, workflowName, setWorkflowName, nameError, data }) => {
+export default ({ onConfirm, onCancel, onDelete, workflowName, setWorkflowName, nameError, data }) => {
     // Tracks which workflow the user has clicked/selected
     const [clicked, setClicked] = useState(null)
 
@@ -19,12 +19,21 @@ export default ({ onConfirm, onCancel, workflowName, setWorkflowName, nameError,
                     <div
                       key={workflow.id}
                       onClick={() => setClicked(workflow)}
-                      className={`w-48 h-28 rounded-xl p-4 flex flex-col justify-between cursor-pointer transition border-2 ${
+                      className={`relative w-48 h-28 rounded-xl p-4 flex flex-col justify-between cursor-pointer transition border-2 ${
                         clicked?.id === workflow.id
                           ? 'bg-light-cyan-800 border-light-cyan-400'
                           : 'bg-gray-800 border-transparent hover:bg-gray-700'
                       }`}
                     >
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          onDelete(workflow)
+                        }}
+                        className="absolute top-2 right-2 text-gray-400 hover:text-red-400 text-sm"
+                      >
+                        ✕
+                      </button>
                       <p className="text-white text-sm font-medium truncate">{workflow.name}</p>
                       <p className="text-gray-400 text-xs">Click to select</p>
                     </div>

@@ -41,3 +41,14 @@ exports.loadWorkflow = async(req,res) => {
         res.status(500).json({ error: err.message });
     }
 }
+
+exports.deleteWorkflow = async(req,res) => {
+    try {
+        // fetch all workflows belonging to the authenticated user
+        await db.none('DELETE FROM saves WHERE userId=$1 and id=$2;', [req.user.id, req.body.id])
+        res.json({ success: true })
+    } catch (err) {
+        console.log(err)
+        res.status(500).json({ error: err.message });
+    }
+}
