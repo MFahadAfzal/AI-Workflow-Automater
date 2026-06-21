@@ -43,8 +43,10 @@ const getId = () => `dndnode_${crypto.randomUUID()}`
 
 
 function Canvas() {
-  const [nodes, setNodes] = useState(initialNodes);
-  const [edges, setEdges] = useState(initialEdges);
+  const [nodes, setNodes] = useState(() => {const saved = localStorage.getItem('canvas_nodes'); return saved ? JSON.parse(saved) : initialNodes})
+
+  const [edges, setEdges] = useState(() => {const saved = localStorage.getItem('canvas_edges'); return saved ? JSON.parse(saved) : initialEdges});
+  
   const [errorMessage, setErrorMessage] = useState('')
   // Stores the current save's DB id — null means this workflow hasn't been saved yet
   const [saveId, setSaveId] = useState(null)
@@ -65,6 +67,12 @@ function Canvas() {
   const [type] = useDnD();
   const navigate = useNavigate()
 
+
+
+  useEffect(() => {
+    localStorage.setItem('canvas_nodes', JSON.stringify(nodes))
+    localStorage.setItem('canvas_edges', JSON.stringify(edges))
+  }, [nodes, edges]);
   // On mount, verify the JWT token is still valid
   // If expired or missing, clear token and redirect to login
   useEffect(() => {
@@ -149,11 +157,7 @@ function Canvas() {
         data: { label: `${type} node` },
       };
  
-      setNodes((nds) => {
-    const updated = nds.concat(newNode)
-    console.log('actual current nodes:', updated)
-    return updated
-});
+      setNodes((nds) => nds.concat(newNode));
     },
     [screenToFlowPosition, type],
   );
