@@ -4,8 +4,10 @@ const executionEngineService = require('../services/executionEngineService')
 const wsConnections = require('../services/wsConnections')
 
 exports.runWorkflow = async (req, res) => {
+    console.log('LOOKING UP user id:', req.user.id)
     const { nodes, edges } = req.body
     const ws = wsConnections.getClient(req.user.id)
+    console.log('ws found:', ws ? 'YES, type: ' + typeof ws : 'NO, ws is undefined')
     const results = await executionEngineService.executeWorkflow(nodes, edges, ws)
     res.json(results)
 }

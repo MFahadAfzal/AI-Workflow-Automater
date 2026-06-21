@@ -30,16 +30,16 @@ const initialNodes = [
   { id: '1', type: 'prompt', position: { x: 0, y: 0 }, data: { label: 'Node 1', prompt: 'hello' } },
   { id: '2', type: 'groq', position: { x: 0, y: 100 }, data: { label: 'Node 2' } },
   { id: '3', type: 'result', position: { x: 0, y: 200 }, data: { label: 'Node 3' } }
-];
+]
 
 // Default edges connecting the initial nodes
 const initialEdges = [{ id: 'e1-2', source: '1', target: '2' },
   { id: 'e2-3', source: '2', target: '3' }
-];
+]
 
 // Counter for generating unique node IDs on drag and drop
-let id = 0;
-const getId = () => `dndnode_${id++}`;
+
+const getId = () => `dndnode_${crypto.randomUUID()}`
 
 
 function Canvas() {
@@ -149,7 +149,11 @@ function Canvas() {
         data: { label: `${type} node` },
       };
  
-      setNodes((nds) => nds.concat(newNode));
+      setNodes((nds) => {
+    const updated = nds.concat(newNode)
+    console.log('actual current nodes:', updated)
+    return updated
+});
     },
     [screenToFlowPosition, type],
   );
