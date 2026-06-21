@@ -1,13 +1,24 @@
-// services/wsConnections.js
-const { WebSocketServer } = require('ws')
+// wsConnections.js
+const { verifyToken } = require("./jwtService");
 
-let wss = null
+const { WebSocketServer } = require('ws')
+const clients = new Map()
 
 exports.init = (server) => {
-    wss = new WebSocketServer({ server })
+    const wss = new WebSocketServer({ server })
+    wss.on('connection', (ws, req) => {
+        const [path, token] = req.url.split('?token=')
+        try{
+            const decoded = verifyToken(token)
+            // get user id from the connection (e.g. from a token in the URL query or initial message)
+            clients.set(decoded.id, ws)
+            ws.on('close', () => clients.delete(decoded.id))
+        }catch (err){
+            console.error('WebSocket auth failed:', err.message)
+            ws.close()
+        }
+        
+    })
 }
 
-exports.getClient = () => {
-    const clients = Array.from(wss.clients)
-    return clients[0]
-}
+exports.getClient = (userId) => clients.get(userId)

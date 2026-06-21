@@ -50,7 +50,9 @@ const run = async(data) => {
     const response = await fetch(`${baseUrl}/workflow/run`, {
         method: 'POST',
         headers: {
+            'Authorization': `Bearer ${localStorage.getItem('token')}`,
             'Content-Type': 'application/json'
+            
         },
         body: JSON.stringify(data)
     })

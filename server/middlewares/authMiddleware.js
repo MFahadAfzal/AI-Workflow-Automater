@@ -15,7 +15,7 @@ module.exports = (req, res, next) => {
 
   try {
     //Verify token using jwtService
-    const decoded = verifyToken(token);
+    const decoded = verifyToken(token)
 
     //Attach decoded user info to request object
     req.user = decoded;
@@ -26,4 +26,4 @@ module.exports = (req, res, next) => {
     // If token is invalid or expired
     res.status(401).json({ message: "Invalid or expired token" });
   }
-};
+}

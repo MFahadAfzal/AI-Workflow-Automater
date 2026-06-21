@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { flushSync } from 'react-dom'
 
 export function useWorkflowSocket() {
-  const wsUri = import.meta.env.VITE_WS_URL
+  const wsUri = `${import.meta.env.VITE_WS_URL}?token=${localStorage.getItem('token')}`
   const [messages, setMessages] = useState({});
 
   useEffect(() => {

@@ -4,7 +4,7 @@ const workflowController = require("../controllers/workflowController")
 const authMiddleware = require("../middlewares/authMiddleware")
 
 
-router.post("/run", workflowController.runWorkflow)
+router.post("/run", authMiddleware, workflowController.runWorkflow)
 router.post("/save", authMiddleware, workflowController.saveWorkflow)
 router.get("/load", authMiddleware, workflowController.loadWorkflow)
 router.delete('/delete', authMiddleware, workflowController.deleteWorkflow)

@@ -5,7 +5,7 @@ const wsConnections = require('../services/wsConnections')
 
 exports.runWorkflow = async (req, res) => {
     const { nodes, edges } = req.body
-    const ws = wsConnections.getClient()
+    const ws = wsConnections.getClient(req.user.id)
     const results = await executionEngineService.executeWorkflow(nodes, edges, ws)
     res.json(results)
 }
