@@ -46,7 +46,7 @@ function Canvas() {
   const [nodes, setNodes] = useState(() => {const saved = localStorage.getItem('canvas_nodes'); return saved ? JSON.parse(saved) : initialNodes})
 
   const [edges, setEdges] = useState(() => {const saved = localStorage.getItem('canvas_edges'); return saved ? JSON.parse(saved) : initialEdges});
-  
+
   const [errorMessage, setErrorMessage] = useState('')
   // Stores the current save's DB id — null means this workflow hasn't been saved yet
   const [saveId, setSaveId] = useState(null)
@@ -98,7 +98,11 @@ function Canvas() {
     else if (messages.type === 'node_started' || messages.type === 'node_complete') {
       setNodes(prevNodes => prevNodes.map(n => 
         n.id === messages.nodeId 
-          ? {...n, data: {...n.data, running: messages.type === 'node_started'}} 
+          ? {...n, data: {
+              ...n.data, 
+              running: messages.type === 'node_started',
+              response: messages.type === 'node_complete' ? messages.content : n.data.response
+            }} 
           : n
       ))
     }

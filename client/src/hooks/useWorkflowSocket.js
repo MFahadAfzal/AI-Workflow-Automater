@@ -5,6 +5,7 @@ export function useWorkflowSocket() {
   const wsUri = `${import.meta.env.VITE_WS_URL}?token=${localStorage.getItem('token')}`
   const [messages, setMessages] = useState({});
 
+
   useEffect(() => {
     const websocket = new WebSocket(wsUri);
 
@@ -21,15 +22,21 @@ export function useWorkflowSocket() {
 
     if (parsed.type === 'node_started' || parsed.type === 'node_complete' || parsed.type === 'node_aborted') {
       flushSync(() => {
-        setMessages(parsed)
+        setMessages(prev => ({ ...prev, ...parsed }))
       })
       return
     }
 
-    setMessages(prev => ({
-      ...parsed,
-      content: prev.nodeId === parsed.nodeId ? (prev.content || '') + parsed.content : parsed.content
-    }))
+
+
+    setMessages(prev => {
+        const next = {
+            ...parsed,
+            content: prev.nodeId === parsed.nodeId ? (prev.content || '') + parsed.content : parsed.content
+        }
+
+        return next
+    })
 })
 
     return () => {
