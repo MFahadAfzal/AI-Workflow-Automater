@@ -18,27 +18,25 @@ export function useWorkflowSocket() {
     });
 
     websocket.addEventListener('message', (event) => {
-    const parsed = JSON.parse(event.data)
-
-    if (parsed.type === 'node_started' || parsed.type === 'node_complete' || parsed.type === 'node_aborted') {
-      flushSync(() => {
-        setMessages(prev => ({ ...prev, ...parsed }))     
-      })
-      setMessages({})
-      return
-    }
-
-
-
-    setMessages(prev => {
-        const next = {
-            ...parsed,
-            content: prev.nodeId === parsed.nodeId ? (prev.content || '') + parsed.content : parsed.content
+        const parsed = JSON.parse(event.data)
+        console.log(messages)
+        if (parsed.type === 'node_started' || parsed.type === 'node_complete' || parsed.type === 'node_aborted') {
+          flushSync(() => {
+            setMessages(prev => ({ ...prev, ...parsed }))     
+          })
+          setMessages({})
+          return
         }
 
-        return next
+        setMessages(prev => {
+            const next = {
+                ...parsed,
+                content: prev.nodeId === parsed.nodeId ? (prev.content || '') + parsed.content : parsed.content
+            }
+
+            return next
+        })
     })
-})
 
     return () => {
       websocket.close();
