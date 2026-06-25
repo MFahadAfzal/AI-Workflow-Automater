@@ -19,7 +19,7 @@ export function useWorkflowSocket() {
 
     websocket.addEventListener('message', (event) => {
         const parsed = JSON.parse(event.data)
-        console.log(messages)
+        console.log(parsed)
         if (parsed.type === 'node_started' || parsed.type === 'node_complete' || parsed.type === 'node_aborted') {
           flushSync(() => {
             setMessages(prev => ({ ...prev, ...parsed }))     
