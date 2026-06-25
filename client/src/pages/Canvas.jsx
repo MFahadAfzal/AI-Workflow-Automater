@@ -78,29 +78,29 @@ function Canvas() {
 
   // Apply incoming WebSocket events to the corresponding node's visual state
   useEffect(() => {
-    if (messages.type === 'node_aborted') {
-      setNodes(prevNodes => prevNodes.map(n =>
-        n.id === messages.nodeId
-          ? { ...n, data: { ...n.data, error: true, running: false } }
-          : n
-      ))
-    } else if (messages.type === 'node_started' || messages.type === 'node_complete') {
-      setNodes(prevNodes => prevNodes.map(n =>
-        n.id === messages.nodeId
-          ? { ...n, data: {
-              ...n.data,
-              running: messages.type === 'node_started',
-              // Only write final content on node_complete; preserve accumulated content during streaming
-              response: messages.type === 'node_complete' ? messages.content : n.data.response
-            }}
-          : n
-      ))
-    } else if (messages.type === 'groq' || messages.type === 'mistral') {
-      // Streaming chunks — overwrite response with latest accumulated content from the hook
-      setNodes(prevNodes => prevNodes.map(n => n.id === messages.nodeId ?
-        { ...n, data: { ...n.data, response: messages.content } }
-        : n))
-    }
+    Object.values(messages).forEach(message => {
+      if (message.type === 'node_aborted') {
+        setNodes(prevNodes => prevNodes.map(n =>
+          n.id === message.nodeId
+            ? { ...n, data: { ...n.data, error: true, running: false } }
+            : n
+        ))
+      } else if (message.type === 'node_started' || message.type === 'node_complete') {
+        setNodes(prevNodes => prevNodes.map(n =>
+          n.id === message.nodeId
+            ? { ...n, data: {
+                ...n.data,
+                running: message.type === 'node_started',
+                response: message.type === 'node_complete' ? message.content : n.data.response
+              }}
+            : n
+        ))
+      } else if (message.type === 'groq' || message.type === 'mistral') {
+        setNodes(prevNodes => prevNodes.map(n => n.id === message.nodeId ?
+          { ...n, data: { ...n.data, response: message.content } }
+          : n))
+      }
+    })
   }, [messages]);
 
   // Delegate node/edge change events to ReactFlow's built-in helpers
