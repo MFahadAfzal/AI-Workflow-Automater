@@ -239,6 +239,12 @@ function Canvas() {
       }
   }
 
+  const handleCreateNewWorkflow = () =>{
+    setSaveId(null)
+    setNodes([])
+    setEdges([])
+  }
+
   const handleClear = () => {
     if (!window.confirm('Clear the canvas?')) return
     setNodes([])
@@ -254,7 +260,7 @@ function Canvas() {
     <div className="w-screen h-screen flex flex-col gap-1">
 
         <div className='flex'>
-          <Topbar onRun={handleRun} onLoad={handleLoad} onSave={handleSave} onLogout={handleLogout} onHelp={() => setHelpModalOpen(true)}/>
+          <Topbar onRun={handleRun} onLoad={handleLoad} onSave={handleSave} onLogout={handleLogout} onHelp={() => setHelpModalOpen(true)} onNew={handleCreateNewWorkflow}/>
         </div>
 
         <div className="w-screen h-screen flex flex-row">
