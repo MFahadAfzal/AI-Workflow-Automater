@@ -178,9 +178,9 @@ function Canvas() {
 
       const data = await run({ nodes, edges })
       Object.entries(data).forEach(item => {
-        
         const [outputId, outputData] = item
         updateNodeData(outputId, {output: Object.values(outputData).join('\n') })
+        clearMessages()
       })
         
     } catch(error){

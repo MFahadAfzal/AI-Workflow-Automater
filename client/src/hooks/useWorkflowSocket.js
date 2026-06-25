@@ -22,8 +22,9 @@ export function useWorkflowSocket() {
 
     if (parsed.type === 'node_started' || parsed.type === 'node_complete' || parsed.type === 'node_aborted') {
       flushSync(() => {
-        setMessages(prev => ({ ...prev, ...parsed }))
+        setMessages(prev => ({ ...prev, ...parsed }))     
       })
+      setMessages({})
       return
     }
 
