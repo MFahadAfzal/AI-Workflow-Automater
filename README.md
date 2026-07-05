@@ -2,6 +2,7 @@
 
 Demo Account Email: guest@guest.com
 Demo Account Password: guest
+
 A visual, drag-and-drop workflow builder for chaining and executing AI-powered tasks. Design workflows as a graph of connected nodes, then run them with real-time streaming output, safe concurrent execution, and automatic dependency resolution.
 
 Features
