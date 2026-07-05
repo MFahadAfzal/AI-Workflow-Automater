@@ -37,7 +37,7 @@ Prerequisites
 
 Node.js (v18+ recommended)
 npm or yarn
-A Supabase project (URL + API key)
+A PostgreSQL database (Supabase recommended)
 API keys for Groq and Mistral
 
 
@@ -47,8 +47,8 @@ Installation
 Clone the repository:
 
 
-bash   git clone <your-repo-url>
-   cd <repo-folder>
+bash   git clone https://github.com/MFahadAfzal/AI-Workflow-Automater.git
+   cd AI-Workflow-Automater
 
 
 Install dependencies for both client and server:
@@ -63,9 +63,8 @@ bash   cd client
 Create a .env file in the server directory with the following variables:
 
 
-env   PORT=5000
-   SUPABASE_URL=your_supabase_url
-   SUPABASE_KEY=your_supabase_key
+env   PORT=3000
+   DATABASE_URL=your_database_url
    JWT_SECRET=your_jwt_secret
    GROQ_API_KEY=your_groq_api_key
    MISTRAL_API_KEY=your_mistral_api_key
@@ -82,10 +81,10 @@ Run the frontend (in a separate terminal):
 
 
 bash   cd client
-   npm start
+   npm run dev
 
 
-Open http://localhost:3000 in your browser.
+Open http://localhost:5173 in your browser.
 
 
 How It Works
