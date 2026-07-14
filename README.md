@@ -39,7 +39,7 @@ The core DAG execution engine has unit test coverage for:
 - Empty-input edge case
 - Node-type routing (AI calls only fire for AI node types)
 
-Tests run automatically on every push and pull request via GitHub Actions — see the badge above, or the [workflow file](./.github/workflows/main.yml).
+Tests run automatically on every push and pull request via GitHub Actions — see the badge above, or the [workflow file](./.github/workflows/ci.yml).
 
 To run tests locally:
 
