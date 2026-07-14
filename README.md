@@ -1,6 +1,6 @@
 # AI Workflow Automator
 
-[![Tests](https://github.com/MFahadAfzal/AI-Workflow-Automater/actions/workflows/main.yml/badge.svg)](https://github.com/MFahadAfzal/AI-Workflow-Automater/actions)
+[![Tests](https://github.com/MFahadAfzal/AI-Workflow-Automater/actions/workflows/ci.yml/badge.svg)](https://github.com/MFahadAfzal/AI-Workflow-Automater/actions)
 
 **Deployed URL:** https://ai-workflow-automater-1.onrender.com/
 
